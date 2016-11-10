@@ -1,23 +1,16 @@
-Cybercommons API Docker Build 
-===
+ETAG API Docker Build 
+===================
 Django Rest API which includes Tasks, Catalog, Local Data Store
-
-
 Docker api works in conjuction with docker cybercom/celery image.
 
-First need to add config.sh
 
-wget -o config.py https://raw.githubusercontent.com/ouinformatics/ccstack-docker/master/api/api/config_example.py
+This is a repository that will run with the cybercommons platform.
 
-Adjust config.py to your configuration
+### Install
 
-Docker API commands
+* Install Cybercommons Platform [cybercom](https://github.com/cybercommons/cybercom-cookiecutter)
+* Then replace the default api_code  folder with this repository.
+* Run Docker Build
+    $  docker build -t api .
+* Adjust config/api_config. Add Database connections
 
-docker run -d --net=host -v /path/to/config.py:/usr/src/app/api/config.py cybercom/api
-
-This docker container export to localhost:8080
- 
-Can proxy with NGINX
-
-Default User: admin
-Default Password: admin

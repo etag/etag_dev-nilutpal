@@ -43,10 +43,11 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-        'catalog.permission.DjangoMongoPermissionsOrAnonReadOnly'
+        'catalog.permission.DjangoMongoPermissionsOrAnonReadOnly',
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
@@ -84,7 +85,8 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'cybercom_queue',
     'catalog',
-    'data_store'
+    'data_store',
+    'etag'
 
 )
 
@@ -106,13 +108,33 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
+#etag_auth
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'etag_auth',
+        'USER': 'postgres',
+        #'USER': 'etag_master',
+        #'PASSWORD': 'ReIgygBRQWpf',
+        'HOST':'postgres',
+        #'HOST': 'db.ouetag.org',
+        'PORT': '5432',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+    'etag': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'etag',
+        'USER': 'postgres',
+        'HOST': 'postgres',
+        #'USER': 'etag_master',
+        #'PASSWORD': 'ReIgygBRQWpf',
+        #'HOST': 'db.ouetag.org',
+        'PORT': '5432',
     }
 }
+
+DATABASE_ROUTERS = ['api.etag_router.EtagRouter',]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/

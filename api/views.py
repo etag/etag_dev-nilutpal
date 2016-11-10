@@ -4,16 +4,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly,DjangoModelPermissionsOrAnonReadOnly,AllowAny
 from rest_framework import serializers, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import JSONParser,MultiPartParser,FormParser,FileUploadParser
 #from .models import AuthtokenToken, AuthUser
 from django.contrib.auth.decorators import login_required
 from hashlib import md5
 #from rest_framework import viewsets
 #from rest_framework.permissions import AllowAny
 #from .permissions import IsStaffOrTargetUser
-
+import os
+from rest_framework.renderers import JSONRenderer, JSONPRenderer
 #Login required mixin
 class LoginRequiredMixin(object):
     @classmethod
@@ -30,10 +33,57 @@ class APIRoot(APIView):
         return Response({
             'Queue': {'Tasks': reverse('queue-main', request=request),
                       'Tasks History': reverse('queue-user-tasks',request=request)},
+		             'Data Store': {'ETAG Postgresql':{'Readers':reverse('readers-list',request=request),
+                                              'Reader Location':reverse('readerlocation-list',request=request),
+                                              'Tags':reverse('tags-list',request=request),
+                                              'Tag Read':reverse('tagreads-list',request=request),
+                                              'Tag Animal':reverse('taganimal-list',request=request),
+                                              'Accessory Data':reverse('accessorydata-list',request=request),
+                                             },
+              'Mongo':reverse('data-list',request=request)
+                         },
             'Catalog': {'Data Source':reverse('catalog-list',request=request)},
-            'Data Store': {'Mongo':reverse('data-list',request=request)},
+            
             'User Profile': {'User':reverse('user-list',request=request)}
+            
         })
+
+class FileUploadView(APIView):
+	permission_classes =(AllowAny,)
+	#parser_classes = (MultiPartParser, FormParser,FileUploadParser,)
+	parser_classes = (FileUploadParser,)
+	renderer_classes = (JSONRenderer,)
+
+	def post(self, request, format=None):
+		resultDir = os.path.join("/data/file_upload")
+		try:
+			os.makedirs(resultDir)
+		except:
+			pass
+		result={}
+		print('hi')
+		mydata=request.DATA
+		result={'mydata':mydata}
+		print(request)
+		#raise Exception("my error")
+		for key,value in request.FILES.iteritems():
+			filename= value.name
+			print(filename)
+			print('hi')
+			local_file = "%s/%s" % (resultDir,filename)
+			self.handle_file_upload(request.FILES[key],local_file)
+			result[key]=local_file
+		return Response(result)		
+		
+    
+	def handle_file_upload(self,f,filename):
+		if f.multiple_chunks():
+			with open(filename, 'wb+') as temp_file:
+				for chunk in f.chunks():
+					temp_file.write(chunk)
+		else:
+			with open(filename, 'wb+') as temp_file:
+				temp_file.write(f.read())
 
 class UserSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100)

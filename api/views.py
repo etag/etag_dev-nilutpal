@@ -48,43 +48,6 @@ class APIRoot(APIView):
             
         })
 
-class FileUploadView(APIView):
-	permission_classes =(AllowAny,)
-	#parser_classes = (MultiPartParser, FormParser,FileUploadParser,)
-	parser_classes = (FileUploadParser,)
-	renderer_classes = (JSONRenderer,)
-
-	def post(self, request, format=None):
-		resultDir = os.path.join("/data/file_upload")
-		try:
-			os.makedirs(resultDir)
-		except:
-			pass
-		result={}
-		print('hi')
-		mydata=request.DATA
-		result={'mydata':mydata}
-		print(request)
-		#raise Exception("my error")
-		for key,value in request.FILES.iteritems():
-			filename= value.name
-			print(filename)
-			print('hi')
-			local_file = "%s/%s" % (resultDir,filename)
-			self.handle_file_upload(request.FILES[key],local_file)
-			result[key]=local_file
-		return Response(result)		
-		
-    
-	def handle_file_upload(self,f,filename):
-		if f.multiple_chunks():
-			with open(filename, 'wb+') as temp_file:
-				for chunk in f.chunks():
-					temp_file.write(chunk)
-		else:
-			with open(filename, 'wb+') as temp_file:
-				temp_file.write(f.read())
-
 class UserSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100)
     email = serializers.EmailField()

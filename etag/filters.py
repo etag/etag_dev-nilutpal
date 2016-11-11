@@ -5,15 +5,16 @@ from models import Readers, ReaderLocation,Tags, TagReads, TagAnimal
 
 
 class ReadersFilter(django_filters.FilterSet):
-    reader_id = django_filters.CharFilter(lookup_type='icontains')
-    name = django_filters.CharFilter(lookup_type='icontains')
-    description = django_filters.CharFilter(lookup_type='icontains')
-    user_id = django_filters.CharFilter(lookup_type='icontains')
+    reader_id = django_filters.CharFilter(lookup_type='iexact')
+    #name = django_filters.CharFilter(lookup_type='iexact')
+    #description = django_filters.CharFilter(lookup_type='iexact')
+    #user_id = django_filters.CharFilter(lookup_type='iexact')
     
     class Meta:
         model = Readers
-        fields = ['reader_id', 'name', 'description', 'user_id',]
-
+        fields = ['reader_id',]
+        #fields = ['reader_id', 'name', 'description', 'user_id',]
+		
 
 class ReaderLocationFilter(django_filters.FilterSet):
     reader = django_filters.CharFilter(name='reader__reader_id' ,lookup_type='icontains')
@@ -32,13 +33,14 @@ class ReaderLocationFilter(django_filters.FilterSet):
 
         
 class TagsFilter(django_filters.FilterSet):
-    tag_id = django_filters.CharFilter(lookup_type='icontains')
-    name = django_filters.CharFilter(lookup_type='icontains')
-    description = django_filters.CharFilter(lookup_type='icontains')
+    tag_id = django_filters.CharFilter(lookup_type='iexact')
+    #name = django_filters.CharFilter(lookup_type='icontains')
+    #description = django_filters.CharFilter(lookup_type='icontains')
     
     class Meta:
         model = Tags
-        fields = ['tag_id', 'name','description']
+        fields = ['tag_id',]
+        #fields = ['tag_id', 'name','description']
 
         
 class TagReadsFilter(django_filters.FilterSet):
